@@ -27,13 +27,17 @@ window.onload = function(){
 
 	selSistema.addEventListener("change", function(e){
 		//debugger;
-		if(e.target.value == "OUTRO"){
+		let selectedSystem = e.target.value;
+		selectedSystem = selectedSystem.split("/");
+		
+		if(selectedSystem[0] == "OUTRO"){
 			dirOutro.setAttribute("style", "display:block");
 			dirSistema.value = "";
-			dirSistema.value = "";
+			dirPacote.value = "";
 		}else{
-			dirOutro.setAttribute("style", "display:none");
- 			dirSistema.value = e.target.value;
+			dirOutro.setAttribute("style", "display:none");			
+			dirSistema.value = selectedSystem[0];
+			dirPacote.value = selectedSystem[1];
 		}
 	}, false);
 	
@@ -52,45 +56,47 @@ window.onload = function(){
 </head>
 <body>
 	<div id="main">
-		<div class="form-group row">
-			<label for="nomeProjeto" class="col-sm-2 col-form-label">Nome do Projeto: </label> 
-			<div class="col-sm-10">
-				<input type="text" class="form-control" placeholder="Ex.: MCS"/>
-			</div>
-			<label for="numeroChamado" class="col-sm-2 col-form-label">Número do Chamado: </label> 
-			<div class="col-sm-10">	
-				<input type="text" class="form-control" placeholder="Ex.: C0001234"/>
-			</div>
-			<label for="numeroTask" class="col-sm-2 col-form-label">Número da Task: </label> 
-			<div class="col-sm-10">	
-				<input type="text" class="form-control" placeholder="Ex.: T0001234"/>
-			</div>
-			<label for="sistema" class="col-sm-2 col-form-label">Diretório Inetpub do Sistema: </label>
-			<div class="col-sm-10">
-				<select id="selectSistema" class="form-control">
-					<option>Selecione o Sistema</option>
-					<%	
-						for(DiretorioSistemas diretorioSistema : DiretorioSistemas.values()){
-					%>
-							<option value="<% out.print(diretorioSistema.getSistema()); %>">
-								<% out.print(diretorioSistema.getSistema()); %> (<% out.print(diretorioSistema.getDiretorio()); %>)
-							</option>
-					<%
-						}
-					%>
-				</select>
-				<div id="diretoriosOutro">
-					<input type="text" id="diretorioSistema" class="form-control" placeholder="Informe o caminho inetpub do sistema (Ex.: D:\inetpub\MCS\MapfreConnectSite)">
-					<input type="text" id="diretorioPacote" class="form-control" placeholder="Informe o caminho do pacote (Ex.: D:\temp)">
+	<form action="GeraPowershellServlet" method="POST">
+			<div class="form-group row">
+				<label for="nomeProjeto" class="col-sm-2 col-form-label">Nome do Projeto: </label> 
+				<div class="col-sm-10">
+					<input type="text" name="nomeProjeto" class="form-control" placeholder="Ex.: MCS"/>
 				</div>
+				<label for="numeroChamado" class="col-sm-2 col-form-label">Número do Chamado: </label> 
+				<div class="col-sm-10">	
+					<input type="text" name="numeroChamado" class="form-control" placeholder="Ex.: C0001234"/>
+				</div>
+				<label for="numeroTask" class="col-sm-2 col-form-label">Número da Task: </label> 
+				<div class="col-sm-10">	
+					<input type="text" name="numeroTask" class="form-control" placeholder="Ex.: T0001234"/>
+				</div>
+				<label for="sistema" class="col-sm-2 col-form-label">Diretório Inetpub do Sistema: </label>
+				<div class="col-sm-10">
+					<select name="selectSistema" id="selectSistema" class="form-control">
+						<option>Selecione o Sistema</option>
+						<%	
+							for(DiretorioSistemas diretorioSistema : DiretorioSistemas.values()){
+						%>
+								<option value="<% out.print(diretorioSistema.getDiretorio()); %>/<% out.print(diretorioSistema.getDirPacote()); %>">
+									<% out.print(diretorioSistema.getSistema()); %> (<% out.print(diretorioSistema.getDiretorio()); %>)
+								</option>
+						<%
+							}
+						%>
+					</select>
+					<div id="diretoriosOutro">
+						<input type="text" id="diretorioSistema" class="form-control" placeholder="Informe o caminho inetpub do sistema (Ex.: D:\inetpub\MCS\MapfreConnectSite)">
+						<input type="text" id="diretorioPacote" class="form-control" placeholder="Informe o caminho do pacote (Ex.: D:\temp)">
+					</div>
+				</div>
+				<label for="pastaArquivos" class="col-sm-2 col-form-label">Pasta do Pacote: </label> 
+				<div class="col-sm-10">
+					<input type="file" id="folder" class="form-control" webkitdirectory multiple/>
+				</div>
+				<input type="submit" value="Enviar"/>
+				<ul id="output"></ul>
 			</div>
-			<label for="pastaArquivos" class="col-sm-2 col-form-label">Pasta do Pacote: </label> 
-			<div class="col-sm-10">
-				<input type="file" id="folder" class="form-control" webkitdirectory multiple/>
-			</div>
-			
-			<ul id="output"></ul>
-		</div>
+		</form>
 	</div>
 </body>
 </html>

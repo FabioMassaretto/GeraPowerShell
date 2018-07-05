@@ -23,7 +23,7 @@ window.onload = function(){
 	var dirSistema = document.getElementById("diretorioSistema");
 	var dirPacote = document.getElementById("diretorioPacote");
 	
-	dirOutro.setAttribute("style", "display:none");
+	dirOutro.setAttribute("style", "visibility:hidden");
 
 	selSistema.addEventListener("change", function(e){
 		//debugger;
@@ -31,11 +31,11 @@ window.onload = function(){
 		selectedSystem = selectedSystem.split("/");
 		
 		if(selectedSystem[0] == "OUTRO"){
-			dirOutro.setAttribute("style", "display:block");
+			dirOutro.setAttribute("style", "visibility:visible");
 			dirSistema.value = "";
 			dirPacote.value = "";
 		}else{
-			dirOutro.setAttribute("style", "display:none");			
+			dirOutro.setAttribute("style", "visibility:hidden");			
 			dirSistema.value = selectedSystem[0];
 			dirPacote.value = selectedSystem[1];
 		}
@@ -56,7 +56,7 @@ window.onload = function(){
 </head>
 <body>
 	<div id="main">
-	<form action="GeraPowershellServlet" method="POST">
+	<form action="GeraPowershellServlet" method="POST" enctype='multipart/form-data'>
 			<div class="form-group row">
 				<label for="nomeProjeto" class="col-sm-2 col-form-label">Nome do Projeto: </label> 
 				<div class="col-sm-10">
@@ -85,13 +85,13 @@ window.onload = function(){
 						%>
 					</select>
 					<div id="diretoriosOutro">
-						<input type="text" id="diretorioSistema" class="form-control" placeholder="Informe o caminho inetpub do sistema (Ex.: D:\inetpub\MCS\MapfreConnectSite)">
-						<input type="text" id="diretorioPacote" class="form-control" placeholder="Informe o caminho do pacote (Ex.: D:\temp)">
+						<input type="text" name="diretorioSistema" id="diretorioSistema" class="form-control" placeholder="Informe o caminho inetpub do sistema (Ex.: D:\inetpub\MCS\MapfreConnectSite)"/>
+						<input type="text" name="diretorioPacote" id="diretorioPacote" class="form-control" placeholder="Informe o caminho do pacote (Ex.: D:\temp)"/>
 					</div>
 				</div>
 				<label for="pastaArquivos" class="col-sm-2 col-form-label">Pasta do Pacote: </label> 
 				<div class="col-sm-10">
-					<input type="file" id="folder" class="form-control" webkitdirectory multiple/>
+					<input type="file" name="uploadFiles" id="folder" class="form-control" webkitdirectory multiple/>
 				</div>
 				<input type="submit" value="Enviar"/>
 				<ul id="output"></ul>

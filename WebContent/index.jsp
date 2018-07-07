@@ -1,5 +1,4 @@
-<%@page import="org.apache.jasper.tagplugins.jstl.core.ForEach"%>
-<%@page import="com.gerarpowershell.enumerable.DiretorioSistemas"%>
+<%@ page import="com.gerarpowershell.enumerable.DiretorioSistemas" %>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -15,7 +14,7 @@
 
 <script type="text/javascript">
 window.onload = function(){
-	var folder = document.getElementById("folder");
+	var fileInput = document.getElementById("fileInput");
 	var output = document.getElementById("output");
 	var selSistema = document.getElementById("selectSistema");
 	var dirOutro = document.getElementById("diretoriosOutro");
@@ -41,7 +40,7 @@ window.onload = function(){
 		}
 	}, false);
 	
-	folder.addEventListener("change", function(event){
+	fileInput.addEventListener("change", function(event){
 		var files = event.target.files;
 		
 		for(var i = 0; i < files.length; i++){
@@ -91,9 +90,11 @@ window.onload = function(){
 				</div>
 				<label for="pastaArquivos" class="col-sm-2 col-form-label">Pasta do Pacote: </label> 
 				<div class="col-sm-10">
-					<input type="file" name="uploadFiles" id="folder" class="form-control" webkitdirectory multiple/>
+					<input type="file" name="fileInput" id="fileInput" class="form-control" webkitdirectory multiple/>
 				</div>
-				<input type="submit" value="Enviar"/>
+				<div class="col-sm-10">
+					<input type="submit" value="Enviar"/>
+				</div>
 				<ul id="output"></ul>
 			</div>
 		</form>

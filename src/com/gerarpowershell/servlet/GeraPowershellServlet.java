@@ -1,10 +1,11 @@
 package com.gerarpowershell.servlet;
 
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -12,7 +13,14 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.Part;
+
+import org.apache.tomcat.util.http.fileupload.FileItem;
+import org.apache.tomcat.util.http.fileupload.FileUpload;
+import org.apache.tomcat.util.http.fileupload.disk.DiskFileItemFactory;
+import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
+import org.apache.tomcat.util.http.fileupload.servlet.ServletRequestContext;
+
+import com.gerarpowershell.utils.Diretorio;
 
 @WebServlet("/GeraPowershellServlet")
 @MultipartConfig
@@ -25,34 +33,98 @@ public class GeraPowershellServlet extends HttpServlet {
 	private static final long serialVersionUID = -7306254444681787832L;
 
 	private String localSalvarPS = "C:\\Temp\\"; 
+	private String nomeProjeto = "";
+	private String numeroChamado = "";
+	private String numeroTask = "";
+	private String diretorioSistema = "";
+	private String diretorioPacote = "";
+	Diretorio diretorio = new Diretorio();
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) {
 		
 	}
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) {
-		String nomeProjeto = request.getParameter("nomeProjeto");
-		String numeroChamado = request.getParameter("numeroChamado");
-		String numeroTask = request.getParameter("numeroTask");
-		String diretorioSistema = request.getParameter("diretorioSistema");
-		String diretorioPacote = request.getParameter("diretorioPacote");
-		
-		try {
-			List<Part> listPart = request.getParts().stream().filter(part -> "uploadFiles".equals(part.getName())).collect(Collectors.toList());
-			
-			for(Part part : listPart) {
-				String fileName = Paths.get(part.getSubmittedFileName()).getFileName().toString();
-				String filePath = Paths.get(part.getSubmittedFileName()).getParent().toString();
-				InputStream fileContent = part.getInputStream();
-				//System.out.println(fileContent.);
-				System.out.println(filePath);
-				System.out.println(fileName);
-			}
-			
-		} catch (IOException e) {
+		String filePathCtx = getServletContext().getInitParameter("file-upload");
+
+		//process only if its multipart content
+        if(ServletFileUpload.isMultipartContent(request)){
+            try {
+            	Path path = Paths.get(filePathCtx);
+            	if(!Files.exists(path)) {
+            		Files.createDirectories(path);
+            	}
+            	//List<FileItem> items = uploadHandler.parseRequest(new ServletRequestContext(request));
+            	
+                List<FileItem> multiparts = new ServletFileUpload(
+                                         new DiskFileItemFactory()).parseRequest(new ServletRequestContext(request));
+              
+                for(FileItem item : multiparts){
+                	if(item.getFieldName().equals("nomeProjeto")) {
+                		nomeProjeto = item.getString();
+                	}
+                	
+                	if(item.getFieldName().equals("numeroChamado")) {
+                		numeroChamado = item.getString();
+                	}
+                	
+                	if(item.getFieldName().equals("numeroTask")) {
+                		numeroTask = item.getString();
+                	}
+                	
+                	if(item.getFieldName().equals("diretorioSistema")) {
+                		diretorioSistema = item.getString();
+                	}
+                	
+                	if(item.getFieldName().equals("diretorioPacote")) {
+                		diretorioPacote = item.getString();
+                	}
+     	
+                	
+                    if(!item.isFormField()){
+                    	if(!diretorio.isBaseDiretoriosCriada()) {                    		
+                    		try {
+                    			diretorio.CriarBaseDiretorios(localSalvarPS, nomeProjeto, numeroChamado, numeroTask);
+                    		} catch (IOException e1) {
+                    			// TODO Auto-generated catch block
+                    			e1.printStackTrace();
+                    		}
+                    	}
+                    	
+                        String name = new File(item.getName()).getName();
+                        String parentPath = new File(item.getName()).getParent();
+                        
+                        String sitePath = diretorio.getSiteFolderPath().toString();
+                        
+                        //String fulPath = filePathCtx + parentPath;
+                        String fulPath = sitePath + File.separator + parentPath;
+                        
+                        path = Paths.get(fulPath);
+                    	if(!Files.exists(path)) {
+                    		Files.createDirectories(path);
+                    	}
+                        
+                        item.write( new File(fulPath + File.separator + name));
+                    }
+                }
+           
+               //File uploaded successfully
+               request.setAttribute("message", "File Uploaded Successfully");
+            } catch (Exception ex) {
+               request.setAttribute("message", "File Upload Failed due to " + ex);
+            }          
+         
+        }else{
+            request.setAttribute("message",
+                                 "Sorry this Servlet only handles file upload request");
+        }
+    
+        try {
+			request.getRequestDispatcher("/result.jsp").forward(request, response);
+		} catch (ServletException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (ServletException e) {
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

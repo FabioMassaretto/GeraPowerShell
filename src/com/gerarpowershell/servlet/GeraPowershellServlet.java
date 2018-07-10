@@ -20,6 +20,7 @@ import org.apache.tomcat.util.http.fileupload.disk.DiskFileItemFactory;
 import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
 import org.apache.tomcat.util.http.fileupload.servlet.ServletRequestContext;
 
+import com.gerarpowershell.powershell.CabecalhoScriptsPS;
 import com.gerarpowershell.utils.Diretorio;
 
 @WebServlet("/GeraPowershellServlet")
@@ -33,11 +34,12 @@ public class GeraPowershellServlet extends HttpServlet {
 	private static final long serialVersionUID = -7306254444681787832L;
 
 	private String localSalvarPS = "C:\\Temp\\"; 
-	private String nomeProjeto = "";
+	private String nomeSistema = "";
 	private String numeroChamado = "";
 	private String numeroTask = "";
 	private String diretorioSistema = "";
 	private String diretorioPacote = "";
+	private String diretorioPacoteComGMUD = "";
 	Diretorio diretorio = new Diretorio();
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) {
@@ -46,6 +48,7 @@ public class GeraPowershellServlet extends HttpServlet {
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) {
 		String filePathCtx = getServletContext().getInitParameter("file-upload");
+		//CabecalhoScriptsPS cabecalho = new CabecalhoScriptsPS();
 
 		//process only if its multipart content
         if(ServletFileUpload.isMultipartContent(request)){
@@ -60,8 +63,8 @@ public class GeraPowershellServlet extends HttpServlet {
                                          new DiskFileItemFactory()).parseRequest(new ServletRequestContext(request));
               
                 for(FileItem item : multiparts){
-                	if(item.getFieldName().equals("nomeProjeto")) {
-                		nomeProjeto = item.getString();
+                	if(item.getFieldName().equals("nomeSistema")) {
+                		nomeSistema = item.getString();
                 	}
                 	
                 	if(item.getFieldName().equals("numeroChamado")) {
@@ -78,13 +81,14 @@ public class GeraPowershellServlet extends HttpServlet {
                 	
                 	if(item.getFieldName().equals("diretorioPacote")) {
                 		diretorioPacote = item.getString();
+                		diretorioPacoteComGMUD = diretorioPacote + File.separator + "GMUD_" + numeroChamado + "_" + numeroTask;
                 	}
      	
                 	
                     if(!item.isFormField()){
                     	if(!diretorio.isBaseDiretoriosCriada()) {                    		
                     		try {
-                    			diretorio.CriarBaseDiretorios(localSalvarPS, nomeProjeto, numeroChamado, numeroTask);
+                    			diretorio.CriarBaseDiretorios(localSalvarPS, nomeSistema, numeroChamado, numeroTask);
                     		} catch (IOException e1) {
                     			// TODO Auto-generated catch block
                     			e1.printStackTrace();
@@ -108,6 +112,8 @@ public class GeraPowershellServlet extends HttpServlet {
                     }
                 }
            
+                //cabecalho.criaCabecalhoScriptsPS(diretorioSistema, diretorioPacoteComGMUD, "Instalação");
+                
                //File uploaded successfully
                request.setAttribute("message", "File Uploaded Successfully");
             } catch (Exception ex) {

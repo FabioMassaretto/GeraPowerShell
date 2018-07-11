@@ -20,6 +20,8 @@ import org.apache.tomcat.util.http.fileupload.disk.DiskFileItemFactory;
 import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
 import org.apache.tomcat.util.http.fileupload.servlet.ServletRequestContext;
 
+import com.gerarpowershell.enumerable.DiretorioSistemasEnum;
+import com.gerarpowershell.enumerable.TipoScriptEnum;
 import com.gerarpowershell.powershell.CabecalhoScriptsPS;
 import com.gerarpowershell.utils.Diretorio;
 
@@ -112,7 +114,7 @@ public class GeraPowershellServlet extends HttpServlet {
                     }
                 }
            
-                //cabecalho.criaCabecalhoScriptsPS(diretorioSistema, diretorioPacoteComGMUD, "Instalação");
+                //cabecalho.criaCabecalhoScriptsPS(diretorio.getPsFolderPath().toString(), diretorioSistema, diretorioPacoteComGMUD, TipoScriptEnum.INSTALACAO);
                 
                //File uploaded successfully
                request.setAttribute("message", "File Uploaded Successfully");

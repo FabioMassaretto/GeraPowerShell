@@ -5,10 +5,12 @@ import java.util.List;
 
 import org.apache.commons.fileupload.FileItem;
 
+import com.gerarpowershell.enumerable.TipoScriptEnum;
+
 public class ScriptInstalacaoPS extends CabecalhoScriptsPS {
 
-	public ScriptInstalacaoPS(List<FileItem> multipart, String diretorioPacoteComGMUD, String diretorioAplicacao) throws IOException {
-		super.criaCabecalhoScriptsPS(diretorioAplicacao, diretorioPacoteComGMUD, "Instalação");
+	public ScriptInstalacaoPS(List<FileItem> multipart, String diretorioProjetoPS, String diretorioAplicacao, String diretorioPacoteComGMUD) throws IOException {
+		super.criaCabecalhoScriptsPS(diretorioProjetoPS, diretorioAplicacao, diretorioPacoteComGMUD, TipoScriptEnum.INSTALACAO);
 	}
 	
 }

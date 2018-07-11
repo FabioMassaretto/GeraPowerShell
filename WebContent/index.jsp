@@ -1,4 +1,4 @@
-<%@ page import="com.gerarpowershell.enumerable.DiretorioSistemas" %>
+<%@ page import="com.gerarpowershell.enumerable.DiretorioSistemasEnum" %>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -102,8 +102,8 @@ function validaForm(formItem){
 				<div class="col-sm-10">
 					<select name="selectSistema" id="selectSistema" class="form-control">
 						<option>Selecione o Sistema</option>
-						<%	
-							for(DiretorioSistemas diretorioSistema : DiretorioSistemas.values()){
+						<%
+							for(DiretorioSistemasEnum diretorioSistema : DiretorioSistemasEnum.values()){
 						%>
 								<option value="<% out.print(diretorioSistema.getDiretorio()); %>/<% out.print(diretorioSistema.getDirPacote()); %>">
 									<% out.print(diretorioSistema.getSistema()); %> (<% out.print(diretorioSistema.getDiretorio()); %>)

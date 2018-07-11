@@ -1,5 +1,6 @@
 package com.gerarpowershell.powershell;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -8,19 +9,40 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.gerarpowershell.enumerable.TipoScriptEnum;
+import com.sun.javafx.scene.control.skin.TooltipSkin;
+
 public class CabecalhoScriptsPS {
 	public CabecalhoScriptsPS() {
 
 	}
 	
-	public CabecalhoScriptsPS(String dirAplicacao, String dirPacote, String tipoScript) throws IOException {
-		this.criaCabecalhoScriptsPS(dirAplicacao, dirPacote, tipoScript);
+	public CabecalhoScriptsPS(String dirProjetoPS, String dirAplicacao, String dirPacote, TipoScriptEnum tipoScript) throws IOException {
+		this.criaCabecalhoScriptsPS(dirProjetoPS, dirAplicacao, dirPacote, tipoScript);
 	}
 	
-	public List<String> criaCabecalhoScriptsPS(String dirAplicacao, String dirPacote, String tipoScript) throws IOException {
+	public List<String> criaCabecalhoScriptsPS(String dirProjetoPS, String dirAplicacao, String dirPacote, TipoScriptEnum tipoScript) throws IOException {
 		StringBuilder sb = new StringBuilder();
 		List<String> listParamPS = new ArrayList<>();
-		sb.append("Write-Host Copiando arquivos para " + tipoScript + "... -foregroundColor Blue");
+		String dirCompletoProjetoPS = "";
+		
+		switch (tipoScript) {
+		case INSTALACAO:
+			sb.append("Write-Host Copiando arquivos para Instalação... -foregroundColor Blue");
+			dirCompletoProjetoPS = dirProjetoPS + File.separator + tipoScript.getNomeArquivoScript();
+			break;
+		case BACKUP:
+			sb.append("Write-Host Copiando arquivos para Backup... -foregroundColor Blue");
+			dirCompletoProjetoPS = dirProjetoPS + File.separator + tipoScript.getNomeArquivoScript();
+			break;
+		case ROLLBACK:
+			sb.append("Write-Host Copiando arquivos para Rollback... -foregroundColor Blue");
+			dirCompletoProjetoPS = dirProjetoPS + File.separator + tipoScript.getNomeArquivoScript();
+			break;
+		default:
+			break;
+		}
+
 		sb.append(System.getProperty("line.separator"));
 		sb.append(System.getProperty("line.separator"));
 		sb.append("[String]$DirAplicao = \"" + dirAplicacao + "\" #Diretório da aplicação (raiz)");
@@ -29,7 +51,7 @@ public class CabecalhoScriptsPS {
 		sb.append(System.getProperty("line.separator"));
 		listParamPS.add(sb.toString());
 		
-		Path path = Paths.get("c:\\TEmp\\test.ps1");
+		Path path = Paths.get(dirCompletoProjetoPS);
 		
 		Files.write(path, listParamPS, Charset.forName("UTF-8"));
 		

@@ -23,6 +23,7 @@ import org.apache.tomcat.util.http.fileupload.servlet.ServletRequestContext;
 import com.gerarpowershell.enumerable.DiretorioSistemasEnum;
 import com.gerarpowershell.enumerable.TipoScriptEnum;
 import com.gerarpowershell.powershell.CabecalhoScriptsPS;
+import com.gerarpowershell.powershell.ScriptInstalacaoPS;
 import com.gerarpowershell.utils.Diretorio;
 
 @WebServlet("/GeraPowershellServlet")
@@ -51,6 +52,7 @@ public class GeraPowershellServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) {
 		String filePathCtx = getServletContext().getInitParameter("file-upload");
 		//CabecalhoScriptsPS cabecalho = new CabecalhoScriptsPS();
+		
 
 		//process only if its multipart content
         if(ServletFileUpload.isMultipartContent(request)){
@@ -103,18 +105,19 @@ public class GeraPowershellServlet extends HttpServlet {
                         String sitePath = diretorio.getSiteFolderPath().toString();
                         
                         //String fulPath = filePathCtx + parentPath;
-                        String fulPath = sitePath + File.separator + parentPath;
+                        String fullPath = sitePath + File.separator + parentPath;
                         
-                        path = Paths.get(fulPath);
+                        path = Paths.get(fullPath);
                     	if(!Files.exists(path)) {
                     		Files.createDirectories(path);
                     	}
                         
-                        item.write( new File(fulPath + File.separator + name));
+                        item.write( new File(fullPath + File.separator + name));
                     }
                 }
            
                 //cabecalho.criaCabecalhoScriptsPS(diretorio.getPsFolderPath().toString(), diretorioSistema, diretorioPacoteComGMUD, TipoScriptEnum.INSTALACAO);
+                ScriptInstalacaoPS scriptInstalacao = new ScriptInstalacaoPS(multiparts, diretorio.getPsFolderPath().toString(), diretorioSistema, diretorioPacoteComGMUD);
                 
                //File uploaded successfully
                request.setAttribute("message", "File Uploaded Successfully");

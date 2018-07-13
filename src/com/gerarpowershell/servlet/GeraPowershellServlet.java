@@ -23,7 +23,9 @@ import org.apache.tomcat.util.http.fileupload.servlet.ServletRequestContext;
 import com.gerarpowershell.enumerable.DiretorioSistemasEnum;
 import com.gerarpowershell.enumerable.TipoScriptEnum;
 import com.gerarpowershell.powershell.CabecalhoScriptsPS;
+import com.gerarpowershell.powershell.ScriptBackupPS;
 import com.gerarpowershell.powershell.ScriptInstalacaoPS;
+import com.gerarpowershell.powershell.ScriptRollbackPS;
 import com.gerarpowershell.utils.Diretorio;
 
 @WebServlet("/GeraPowershellServlet")
@@ -40,7 +42,7 @@ public class GeraPowershellServlet extends HttpServlet {
 	private String nomeSistema = "";
 	private String numeroChamado = "";
 	private String numeroTask = "";
-	private String diretorioSistema = "";
+	private String diretorioAplicacao = "";
 	private String diretorioPacote = "";
 	private String diretorioPacoteComGMUD = "";
 	Diretorio diretorio = new Diretorio();
@@ -80,7 +82,7 @@ public class GeraPowershellServlet extends HttpServlet {
                 	}
                 	
                 	if(item.getFieldName().equals("diretorioSistema")) {
-                		diretorioSistema = item.getString();
+                		diretorioAplicacao = item.getString();
                 	}
                 	
                 	if(item.getFieldName().equals("diretorioPacote")) {
@@ -116,8 +118,10 @@ public class GeraPowershellServlet extends HttpServlet {
                     }
                 }
            
-                //cabecalho.criaCabecalhoScriptsPS(diretorio.getPsFolderPath().toString(), diretorioSistema, diretorioPacoteComGMUD, TipoScriptEnum.INSTALACAO);
-                ScriptInstalacaoPS scriptInstalacao = new ScriptInstalacaoPS(multiparts, diretorio.getPsFolderPath().toString(), diretorioSistema, diretorioPacoteComGMUD);
+                // Cria os arquivos script PowerShell de Instalação, Backup e Rollback
+                ScriptInstalacaoPS scriptInstalacao = new ScriptInstalacaoPS(multiparts, diretorio.getPsFolderPath().toString(), diretorioAplicacao, diretorioPacoteComGMUD);
+                ScriptBackupPS scriptBackup = new ScriptBackupPS(multiparts, diretorio.getPsFolderPath().toString(), diretorioAplicacao, diretorioPacoteComGMUD);
+                ScriptRollbackPS scriptRollback = new ScriptRollbackPS(multiparts, diretorio.getPsFolderPath().toString(), diretorioAplicacao, diretorioPacoteComGMUD);
                 
                //File uploaded successfully
                request.setAttribute("message", "File Uploaded Successfully");

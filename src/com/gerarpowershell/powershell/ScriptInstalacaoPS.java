@@ -15,26 +15,26 @@ import com.gerarpowershell.enumerable.TipoScriptEnum;
 
 public class ScriptInstalacaoPS extends CabecalhoScriptsPS {
 
-	List<String> listaConteudoPS = new ArrayList<String>();
+	private List<String> listaConteudoPS = new ArrayList<String>();
+	private StringBuilder sb = new StringBuilder();
 	private String dirCompletoProjetoPS = "";
+	private String parentFolder = "";
+	private String fileName = "";
+	private String fullPathDirPackage = "";
+	private String fullPathDirApp = "";
+	private String pathWithoutRootFolder = "";
+	private String splitedParentFolder[] = {};
 	
 	public ScriptInstalacaoPS(List<FileItem> multipart, String diretorioProjetoPS, String diretorioAplicacao, String diretorioPacoteComGMUD) throws IOException {
 		listaConteudoPS =  super.criaCabecalhoScriptsPS(diretorioAplicacao, diretorioPacoteComGMUD, TipoScriptEnum.INSTALACAO);
 		
 		dirCompletoProjetoPS = diretorioProjetoPS + File.separator + TipoScriptEnum.INSTALACAO.getNomeArquivoScript();
 		
-		CriaPowerShelInstalacao(multipart, diretorioProjetoPS, diretorioAplicacao, diretorioPacoteComGMUD);
+		CriaPowerShelInstalacao(multipart, diretorioAplicacao, diretorioPacoteComGMUD);
 	}
 	
-	public void CriaPowerShelInstalacao(List<FileItem> multipart, String diretorioProjetoPS, String diretorioAplicacao, String diretorioPacoteComGMUD) throws IOException {
-		StringBuilder sb = new StringBuilder();
-		String parentFolder = "";
-		String fileName = "";
-		String fullPathDirPackage = "";
-		String fullPathDirApp = "";
-		String pathWithoutRootFolder = "";
-		String splitedParentFolder[] = {};
-		
+	public void CriaPowerShelInstalacao(List<FileItem> multipart, String diretorioAplicacao, String diretorioPacoteComGMUD) throws IOException {
+
 		for(FileItem item : multipart ) {
 			if(!item.isFormField()) {
 				fileName = new File(item.getName()).getName();
@@ -43,7 +43,7 @@ public class ScriptInstalacaoPS extends CabecalhoScriptsPS {
 				splitedParentFolder = parentFolder.split("\\\\");
 
 				for(int i = 1; i < splitedParentFolder.length; i++) {					
-					pathWithoutRootFolder += File.separator + splitedParentFolder[i]; //Excluo a posição 0
+					pathWithoutRootFolder += File.separator + splitedParentFolder[i]; //Excluo a posição 0, pasta raiz
 				}
 	
                 fullPathDirPackage = parentFolder + File.separator + fileName;

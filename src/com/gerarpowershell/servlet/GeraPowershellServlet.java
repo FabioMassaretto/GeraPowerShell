@@ -15,14 +15,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.tomcat.util.http.fileupload.FileItem;
-import org.apache.tomcat.util.http.fileupload.FileUpload;
 import org.apache.tomcat.util.http.fileupload.disk.DiskFileItemFactory;
 import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
 import org.apache.tomcat.util.http.fileupload.servlet.ServletRequestContext;
+import org.zeroturnaround.zip.ZipUtil;
 
-import com.gerarpowershell.enumerable.DiretorioSistemasEnum;
-import com.gerarpowershell.enumerable.TipoScriptEnum;
-import com.gerarpowershell.powershell.CabecalhoScriptsPS;
+import com.gerarpowershell.bat.ExecutorGmudBat;
+import com.gerarpowershell.bat.RollbackBat;
 import com.gerarpowershell.powershell.ScriptBackupPS;
 import com.gerarpowershell.powershell.ScriptInstalacaoPS;
 import com.gerarpowershell.powershell.ScriptRollbackPS;
@@ -31,7 +30,6 @@ import com.gerarpowershell.utils.Diretorio;
 @WebServlet("/GeraPowershellServlet")
 @MultipartConfig
 public class GeraPowershellServlet extends HttpServlet {
-
 	
 	/**
 	 * 
@@ -45,16 +43,15 @@ public class GeraPowershellServlet extends HttpServlet {
 	private String diretorioAplicacao = "";
 	private String diretorioPacote = "";
 	private String diretorioPacoteComGMUD = "";
+	private String outputZipfile = "";
+	private String nomeGMUD = "";
 	Diretorio diretorio = new Diretorio();
 	
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) {
-		
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) {	
 	}
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) {
 		String filePathCtx = getServletContext().getInitParameter("file-upload");
-		//CabecalhoScriptsPS cabecalho = new CabecalhoScriptsPS();
-		
 
 		//process only if its multipart content
         if(ServletFileUpload.isMultipartContent(request)){
@@ -88,8 +85,7 @@ public class GeraPowershellServlet extends HttpServlet {
                 	if(item.getFieldName().equals("diretorioPacote")) {
                 		diretorioPacote = item.getString();
                 		diretorioPacoteComGMUD = diretorioPacote + File.separator + "GMUD_" + numeroChamado + "_" + numeroTask;
-                	}
-     	
+                	}   	
                 	
                     if(!item.isFormField()){
                     	if(!diretorio.isBaseDiretoriosCriada()) {                    		
@@ -102,11 +98,8 @@ public class GeraPowershellServlet extends HttpServlet {
                     	}
                     	
                         String name = new File(item.getName()).getName();
-                        String parentPath = new File(item.getName()).getParent();
-                        
-                        String sitePath = diretorio.getSiteFolderPath().toString();
-                        
-                        //String fulPath = filePathCtx + parentPath;
+                        String parentPath = new File(item.getName()).getParent();                  
+                        String sitePath = diretorio.getSiteFolderPath().toString();                        
                         String fullPath = sitePath + File.separator + parentPath;
                         
                         path = Paths.get(fullPath);
@@ -118,20 +111,28 @@ public class GeraPowershellServlet extends HttpServlet {
                     }
                 }
            
+                nomeGMUD = "GMUD_" + numeroChamado + "_" + numeroTask;
+                
                 // Cria os arquivos script PowerShell de Instalação, Backup e Rollback
-                ScriptInstalacaoPS scriptInstalacao = new ScriptInstalacaoPS(multiparts, diretorio.getPsFolderPath().toString(), diretorioAplicacao, diretorioPacoteComGMUD);
-                ScriptBackupPS scriptBackup = new ScriptBackupPS(multiparts, diretorio.getPsFolderPath().toString(), diretorioAplicacao, diretorioPacoteComGMUD);
-                ScriptRollbackPS scriptRollback = new ScriptRollbackPS(multiparts, diretorio.getPsFolderPath().toString(), diretorioAplicacao, diretorioPacoteComGMUD);
+                ScriptInstalacaoPS.CriaPowerShelInstalacao(multiparts, diretorio.getPsFolderPath().toString(), diretorioAplicacao, diretorioPacoteComGMUD);
+                ScriptBackupPS.criaPowerShellBackup(multiparts, diretorio.getPsFolderPath().toString(), diretorioAplicacao, diretorioPacoteComGMUD);
+                ScriptRollbackPS.criaPowerShellRollback(multiparts, diretorio.getPsFolderPath().toString(), diretorioAplicacao, diretorioPacoteComGMUD);
+                
+                // Cria os arquivos .bat ExecutorGMUD e Rollback
+                ExecutorGmudBat.criarExcutorGMUD(nomeGMUD, diretorioPacote, diretorio.getPackagePath().toString());
+                RollbackBat.criarExcutorGMUD(nomeGMUD, diretorioPacote, diretorio.getPackagePath().toString());
+
+                // Cria o .zip do projeto
+                outputZipfile = diretorio.getGmudPackagePath() + File.separator + nomeGMUD + ".zip";
+                ZipUtil.pack(new File(diretorio.getPackagePath().toString()), new File(outputZipfile));
                 
                //File uploaded successfully
                request.setAttribute("message", "File Uploaded Successfully");
             } catch (Exception ex) {
                request.setAttribute("message", "File Upload Failed due to " + ex);
-            }          
-         
+            }                   
         }else{
-            request.setAttribute("message",
-                                 "Sorry this Servlet only handles file upload request");
+            request.setAttribute("message", "Sorry this Servlet only handles file upload request");
         }
     
         try {

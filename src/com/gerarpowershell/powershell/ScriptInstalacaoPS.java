@@ -15,26 +15,23 @@ import com.gerarpowershell.enumerable.TipoScriptEnum;
 
 public class ScriptInstalacaoPS extends CabecalhoScriptsPS {
 
-	private List<String> listaConteudoPS = new ArrayList<String>();
-	private StringBuilder sb = new StringBuilder();
-	private String dirCompletoProjetoPS = "";
-	private String parentFolder = "";
-	private String fileName = "";
-	private String fullPathDirPackage = "";
-	private String fullPathDirApp = "";
-	private String pathWithoutRootFolder = "";
-	private String splitedParentFolder[] = {};
+	private static List<String> listaConteudoPS = new ArrayList<String>();
+	private static StringBuilder sb = new StringBuilder();
+	private static String dirCompletoProjetoPS = "";
+	private static String parentFolder = "";
+	private static String fileName = "";
+	private static String fullPathDirPackage = "";
+	private static String fullPathDirApp = "";
+	private static String pathWithoutRootFolder = "";
+	private static String splitedParentFolder[] = {};
 	
 	public ScriptInstalacaoPS(List<FileItem> multipart, String diretorioProjetoPS, String diretorioAplicacao, String diretorioPacoteComGMUD) throws IOException {
 		listaConteudoPS =  super.criaCabecalhoScriptsPS(diretorioAplicacao, diretorioPacoteComGMUD, TipoScriptEnum.INSTALACAO);
-		
-		dirCompletoProjetoPS = diretorioProjetoPS + File.separator + TipoScriptEnum.INSTALACAO.getNomeArquivoScript();
-		
-		CriaPowerShelInstalacao(multipart, diretorioAplicacao, diretorioPacoteComGMUD);
+		CriaPowerShelInstalacao(multipart, diretorioProjetoPS, diretorioAplicacao, diretorioPacoteComGMUD);
 	}
 	
-	public void CriaPowerShelInstalacao(List<FileItem> multipart, String diretorioAplicacao, String diretorioPacoteComGMUD) throws IOException {
-
+	public static void CriaPowerShelInstalacao(List<FileItem> multipart, String diretorioProjetoPS, String diretorioAplicacao, String diretorioPacoteComGMUD) throws IOException {
+		dirCompletoProjetoPS = diretorioProjetoPS + File.separator + TipoScriptEnum.INSTALACAO.getNomeArquivoScript();
 		for(FileItem item : multipart ) {
 			if(!item.isFormField()) {
 				fileName = new File(item.getName()).getName();

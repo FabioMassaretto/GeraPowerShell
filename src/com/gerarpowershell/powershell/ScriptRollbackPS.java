@@ -14,25 +14,24 @@ import org.apache.tomcat.util.http.fileupload.FileItem;
 import com.gerarpowershell.enumerable.TipoScriptEnum;
 
 public class ScriptRollbackPS extends CabecalhoScriptsPS{
-	private List<String> listaConteudoPS = new ArrayList<>();
-	private StringBuilder sb = new StringBuilder();
-	private String dirCompletoProjetoPS = "";
-	private String parentFolder = "";
-	private String fileName = "";
-	private String splitedParentFolder[] = {};
-	private String pathWithoutRootFolder = "";
-	private String fullPathDirPackage = "";
-	private String fullPathDirApp = "";
+	private static List<String> listaConteudoPS = new ArrayList<>();
+	private static StringBuilder sb = new StringBuilder();
+	private static String dirCompletoProjetoPS = "";
+	private static String parentFolder = "";
+	private static String fileName = "";
+	private static String splitedParentFolder[] = {};
+	private static String pathWithoutRootFolder = "";
+	private static String fullPathDirPackage = "";
+	private static String fullPathDirApp = "";
 	
 	public ScriptRollbackPS(List<FileItem> multipart, String diretorioProjetoPS, String dirAplicacao, String dirPacote) throws IOException {
 		listaConteudoPS = super.criaCabecalhoScriptsPS(dirAplicacao, dirPacote, TipoScriptEnum.ROLLBACK);
-		
-		dirCompletoProjetoPS = diretorioProjetoPS + File.separator + TipoScriptEnum.ROLLBACK.getNomeArquivoScript();
-		
-		criaPowerShellRollback(multipart, dirAplicacao, dirPacote);
+		criaPowerShellRollback(multipart, diretorioProjetoPS, dirAplicacao, dirPacote);
 	}
 
-	public void criaPowerShellRollback(List<FileItem> multipart, String diretorioAplicacao, String diretorioPacoteComGMUD) throws IOException {	
+	public static void criaPowerShellRollback(List<FileItem> multipart, String diretorioProjetoPS, String diretorioAplicacao, String diretorioPacoteComGMUD) throws IOException {	
+		dirCompletoProjetoPS = diretorioProjetoPS + File.separator + TipoScriptEnum.ROLLBACK.getNomeArquivoScript();
+		
 		// FOR que cria toda a estrutura de rollback
 		for(FileItem item : multipart) {
 			if(!item.isFormField()) {

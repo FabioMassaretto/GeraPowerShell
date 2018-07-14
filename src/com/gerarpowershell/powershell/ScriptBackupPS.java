@@ -14,27 +14,26 @@ import org.apache.tomcat.util.http.fileupload.FileItem;
 import com.gerarpowershell.enumerable.TipoScriptEnum;
 
 public class ScriptBackupPS extends CabecalhoScriptsPS{
-	private List<String> listaConteudoPS = new ArrayList<>();
-	private List<String> listaPastas = new ArrayList<>();
-	private StringBuilder sb = new StringBuilder();
-	private String dirCompletoProjetoPS = "";
-	private String parentFolder = "";
-	private String fileName = "";
-	private String splitedParentFolder[] = {};
-	private String pathWithoutRootFolder = "";
-	private String fullPathDirPackage = "";
-	private String fullPathDirApp = "";
-	private boolean pastaExiste = false;
+	private static List<String> listaConteudoPS = new ArrayList<>();
+	private static List<String> listaPastas = new ArrayList<>();
+	private static StringBuilder sb = new StringBuilder();
+	private static String dirCompletoProjetoPS = "";
+	private static String parentFolder = "";
+	private static String fileName = "";
+	private static String splitedParentFolder[] = {};
+	private static String pathWithoutRootFolder = "";
+	private static String fullPathDirPackage = "";
+	private static String fullPathDirApp = "";
+	private static boolean pastaExiste = false;
 	
 	public ScriptBackupPS(List<FileItem> multipart, String diretorioProjetoPS, String dirAplicacao, String dirPacote) throws IOException {
 		listaConteudoPS = super.criaCabecalhoScriptsPS(dirAplicacao, dirPacote, TipoScriptEnum.BACKUP);
-		
-		dirCompletoProjetoPS = diretorioProjetoPS + File.separator + TipoScriptEnum.BACKUP.getNomeArquivoScript();
-		
-		criaPowerShellBackup(multipart, dirAplicacao, dirPacote);
+		criaPowerShellBackup(multipart, diretorioProjetoPS, dirAplicacao, dirPacote);
 	}		
 	
-	public void criaPowerShellBackup(List<FileItem> multipart, String diretorioAplicacao, String diretorioPacoteComGMUD) throws IOException {
+	public static void criaPowerShellBackup(List<FileItem> multipart, String diretorioProjetoPS, String diretorioAplicacao, String diretorioPacoteComGMUD) throws IOException {
+		dirCompletoProjetoPS = diretorioProjetoPS + File.separator + TipoScriptEnum.BACKUP.getNomeArquivoScript();
+		
 		// FOR para a criacao da estrutura de pastas dentro do PowerShell
 		for(FileItem item : multipart) {
 			if(!item.isFormField()) {

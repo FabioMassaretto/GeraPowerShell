@@ -18,11 +18,11 @@ public class ExecutorGmudBat {
 	}
 
 	public static void criarExcutorGMUD(String nomeGMUD, String dirPacote, String dirRaizProjeto) throws IOException {
+		final String CAMINHO_ARQUIVO_BAT = dirRaizProjeto + File.separator + "ExecutorGMUD.bat";
 		StringBuilder sb = new StringBuilder();
 		List<String> listaConteudo = new ArrayList<>();
 		String caminhoPS = dirPacote + File.separator + nomeGMUD + File.separator + "PS";
 		String lineSeparator = System.getProperty("line.separator");
-		final String CAMINHO_ARQUIVO_BAT = dirRaizProjeto + File.separator + "ExecutorGMUD.bat";
 		
 		sb.append("@echo off");
 		sb.append(lineSeparator);

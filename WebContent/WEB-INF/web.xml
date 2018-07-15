@@ -10,6 +10,15 @@
     <welcome-file>default.jsp</welcome-file>
   </welcome-file-list>
   
+  <servlet>
+        <servlet-name>GeraPowershellServlet</servlet-name>
+        <servlet-class>com.gerarpowershell.servlet.GeraPowershellServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GeraPowershellServlet</servlet-name>
+        <url-pattern>/gerador</url-pattern>
+    </servlet-mapping>
+  
   <context-param> 
    <description>Location to store uploaded file</description> 
    <param-name>file-upload</param-name> 

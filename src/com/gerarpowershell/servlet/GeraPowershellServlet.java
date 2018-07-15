@@ -60,7 +60,6 @@ public class GeraPowershellServlet extends HttpServlet {
             	if(!Files.exists(path)) {
             		Files.createDirectories(path);
             	}
-            	//List<FileItem> items = uploadHandler.parseRequest(new ServletRequestContext(request));
             	
                 List<FileItem> multiparts = new ServletFileUpload(
                                          new DiskFileItemFactory()).parseRequest(new ServletRequestContext(request));
@@ -68,6 +67,7 @@ public class GeraPowershellServlet extends HttpServlet {
                 for(FileItem item : multiparts){
                 	if(item.getFieldName().equals("nomeSistema")) {
                 		nomeSistema = item.getString();
+                		nomeSistema = nomeSistema.toUpperCase();
                 	}
                 	
                 	if(item.getFieldName().equals("numeroChamado")) {
@@ -84,11 +84,22 @@ public class GeraPowershellServlet extends HttpServlet {
                 	
                 	if(item.getFieldName().equals("diretorioPacote")) {
                 		diretorioPacote = item.getString();
-                		diretorioPacoteComGMUD = diretorioPacote + File.separator + "GMUD_" + numeroChamado + "_" + numeroTask;
+                		nomeGMUD = "GMUD_" + numeroChamado + "_" + numeroTask;
+                		diretorioPacoteComGMUD = diretorioPacote + File.separator + nomeGMUD;
                 	}   	
                 	
                     if(!item.isFormField()){
-                    	if(!diretorio.isBaseDiretoriosCriada()) {                    		
+                    	/* 
+                    	 * Crio todas as pastas que servirão de base para colocar os arquivos
+                    	 * 
+                    	 * localSalvarPS = local onde ficará o projeto ex: C:\temp
+                    	 * nomeSistema = Qual o nome do Sistema, definido na index ex.: MCS
+                    	 * numeroChamado = Qual GMUD do sistema ex.: C0001234
+                    	 * numeroTask = Qual o numero da task que esta abrindo ex.: T0001234
+                    	 * 
+                    	 * Exemplo da estrutura de pastas final: C:\temp\MCS\C0001234\T0001234
+                    	*/ 
+                    	if(!diretorio.baseDiretoriosExists(localSalvarPS, nomeSistema, numeroChamado, numeroTask)) {                    		
                     		try {
                     			diretorio.CriarBaseDiretorios(localSalvarPS, nomeSistema, numeroChamado, numeroTask);
                     		} catch (IOException e1) {
@@ -102,16 +113,17 @@ public class GeraPowershellServlet extends HttpServlet {
                         String sitePath = diretorio.getSiteFolderPath().toString();                        
                         String fullPath = sitePath + File.separator + parentPath;
                         
+                        // Crio diretorio chamado "site" se já não existir dentro da pasta "TYYYYYY" do projeto
                         path = Paths.get(fullPath);
                     	if(!Files.exists(path)) {
                     		Files.createDirectories(path);
                     	}
                         
+                    	// Copio todos o arquivos e pastas que o usuario selecionou na tela inicial
+                    	// para a pasta "site" criado anteriormente
                         item.write( new File(fullPath + File.separator + name));
                     }
                 }
-           
-                nomeGMUD = "GMUD_" + numeroChamado + "_" + numeroTask;
                 
                 // Cria os arquivos script PowerShell de Instalação, Backup e Rollback
                 ScriptInstalacaoPS.CriaPowerShelInstalacao(multiparts, diretorio.getPsFolderPath().toString(), diretorioAplicacao, diretorioPacoteComGMUD);
@@ -127,16 +139,18 @@ public class GeraPowershellServlet extends HttpServlet {
                 ZipUtil.pack(new File(diretorio.getPackagePath().toString()), new File(outputZipfile));
                 
                //File uploaded successfully
-               request.setAttribute("message", "File Uploaded Successfully");
+               request.setAttribute("message", "Arquivos gerados com sucesso!");
+               request.setAttribute("outputZipFile", outputZipfile);
             } catch (Exception ex) {
-               request.setAttribute("message", "File Upload Failed due to " + ex);
+               request.setAttribute("message", "Não foi possível gera os arquivos por conta do erro: " + ex);
             }                   
         }else{
-            request.setAttribute("message", "Sorry this Servlet only handles file upload request");
+            request.setAttribute("message", "Desculpa, não foi possível fazer a requisição de upload!");
         }
     
         try {
-			request.getRequestDispatcher("/result.jsp").forward(request, response);
+        	request.getServletContext().getRequestDispatcher("/result.jsp").forward(request, response);
+			//request.getRequestDispatcher("/result.jsp").forward(request, response);
 		} catch (ServletException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

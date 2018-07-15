@@ -39,8 +39,10 @@ public class ScriptInstalacaoPS extends CabecalhoScriptsPS {
 
 				splitedParentFolder = parentFolder.split("\\\\");
 
+				// Para o caminho do diretorio da aplicação, não precisa do 
+				// diretorio raiz onde fica todos os arquivos e pastas da aplicação
 				for(int i = 1; i < splitedParentFolder.length; i++) {					
-					pathWithoutRootFolder += File.separator + splitedParentFolder[i]; //Excluo a posição 0, pasta raiz
+					pathWithoutRootFolder += File.separator + splitedParentFolder[i]; //Começo com i=1 portanto excluo a posição 0, pasta raiz
 				}
 	
                 fullPathDirPackage = parentFolder + File.separator + fileName;

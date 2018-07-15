@@ -51,16 +51,10 @@ public class GeraPowershellServlet extends HttpServlet {
 	}
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) {
-		String filePathCtx = getServletContext().getInitParameter("file-upload");
 
 		//process only if its multipart content
         if(ServletFileUpload.isMultipartContent(request)){
-            try {
-            	Path path = Paths.get(filePathCtx);
-            	if(!Files.exists(path)) {
-            		Files.createDirectories(path);
-            	}
-            	
+            try {           	
                 List<FileItem> multiparts = new ServletFileUpload(
                                          new DiskFileItemFactory()).parseRequest(new ServletRequestContext(request));
               
@@ -113,8 +107,8 @@ public class GeraPowershellServlet extends HttpServlet {
                         String sitePath = diretorio.getSiteFolderPath().toString();                        
                         String fullPath = sitePath + File.separator + parentPath;
                         
-                        // Crio diretorio chamado "site" se já não existir dentro da pasta "TYYYYYY" do projeto
-                        path = Paths.get(fullPath);
+                        // Crio os diretorios que compõem a aplicação dentro da pasta "Site"
+                        Path path = Paths.get(fullPath);
                     	if(!Files.exists(path)) {
                     		Files.createDirectories(path);
                     	}

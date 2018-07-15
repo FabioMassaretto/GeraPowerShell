@@ -50,7 +50,12 @@ public class Diretorio {
 	
 	public boolean baseDiretoriosExists(String rootDiretory, String nomeProjeto, String numeroChamado, String numeroTask) {
 		mainPackagePath = Paths.get(rootDiretory, nomeProjeto, numeroChamado, numeroTask);
-		if(!Files.exists(mainPackagePath)) {
+		psFolderPath = Paths.get(mainPackagePath.toString(), pastaPS);
+		siteFolderPath = Paths.get(mainPackagePath.toString(), pastaSite);
+		gmudPackagePath = Paths.get(rootDiretory, nomeProjeto, "Pacote" , numeroChamado, numeroTask);
+		
+		if(!Files.exists(mainPackagePath) || !Files.exists(psFolderPath) || 
+				!Files.exists(siteFolderPath) || !Files.exists(gmudPackagePath)) {
 			return false;
 		}
 		return true;
